@@ -6,7 +6,7 @@
 
 学校作业项目，为方便个人开发以及与同学交流而开源。**不欢迎 PR、Fork 以及抄袭**，请自觉遵守 Apache 协议！
 
-P.S. 我另使用 Xamarin.Form 完成了一个相同功能的**跨平台**实现(iOS、Android、Windows 10 UWP)，详见 [cdfmlr/MyClock](https://github.com/cdfmlr/MyClock)。
+P.S. 我另使用 Xamarin.Forms 完成了一个相同功能的**跨平台**实现(iOS、Android、Windows 10 UWP)，详见 [cdfmlr/MyClock](https://github.com/cdfmlr/MyClock)。
 
 ## 功能实现
 
@@ -20,7 +20,7 @@ P.S. 我另使用 Xamarin.Form 完成了一个相同功能的**跨平台**实现
 
 ## Tips
 
-> 由于本人对 C# 语言、Windows 系统、WindowsForms、Visual Studio 都不甚熟悉，故在开发时对解决方案中文件的命名出现了一些意外，解决方案被命名为 `WindowsFormsApp2`，整个 UI 响应被放入 `Form1.cs`, 而其他各类全放入了 `Class1.cs`。
+> 由于本人对 C# 语言、Windows 系统、WindowsForms、Visual Studio 都不甚熟悉，故在开发时对解决方案中文件的命名、组织上出现了一些意外，解决方案被命名为 `WindowsFormsApp2`，整个 UI 响应被放入 `Form1.cs`, 其他各类全放入了 `Class1.cs`。
 
 程序主要结构如下：
 
