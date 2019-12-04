@@ -44,5 +44,5 @@ WindowsFormsApp2: 小闹钟程序
 
 ## 协议
 
-Apache © CDFMLR 2019, 保留一切权利。
+Copyright 2019 CDFMLR, 遵循 Apache 协议。
 
