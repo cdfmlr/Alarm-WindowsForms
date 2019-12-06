@@ -12,9 +12,6 @@ namespace WindowsFormsApp2
 {
     public partial class Form1 : Form
     {
-
-        // TODO: timePictureBox的背景
-
         private Graphics clockGraphics;
 
         private AlarmDatabase alarmDatabase;
@@ -23,7 +20,7 @@ namespace WindowsFormsApp2
 
         private TickMarkDrawHelper tickMarkDrawHelper;
 
-        ContextMenu notifyContextMenu = new ContextMenu();
+        // ContextMenu notifyContextMenu = new ContextMenu();
 
         public Form1()
         {
@@ -33,7 +30,7 @@ namespace WindowsFormsApp2
 
             alarmDatabase = new AlarmDatabase("alarm.data.txt");
 
-            alarmListBox.Items.AddRange(alarmDatabase.Alarms.ToArray());    // TODO: pprint
+            refreshAlarmListBox();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -81,8 +78,7 @@ namespace WindowsFormsApp2
                         alarmDatabase.Alarms[i].Run = false;
                         alarmDatabase.Save();
 
-                        alarmListBox.Items.Clear();
-                        alarmListBox.Items.AddRange(alarmDatabase.Alarms.ToArray());
+                        refreshAlarmListBox();
                     }
                 }
 
@@ -186,36 +182,34 @@ namespace WindowsFormsApp2
 
         private void newAddButton_Click(object sender, EventArgs e)
         {
-            /*
-            if (!string.IsNullOrWhiteSpace(newHourTextBox.Text) &&
-                !string.IsNullOrWhiteSpace(newMinuteTextBox.Text) &&
-                !string.IsNullOrWhiteSpace(newTitleTextBox.Text))
-            {
-                
-                // DO SOMETHING
-            }
-            */
-
             try
             {
-                // TODO: 时间值的合理性检查
+                int h = Int16.Parse(newHourTextBox.Text);
+                int m = Int16.Parse(newMinuteTextBox.Text);
+                bool r = newRunCheckBox.Checked;
+                string t = newTitleTextBox.Text;
+
+                if (!isReasonableTime(h, m))
+                {
+                    MessageBox.Show("您输入的时间有误，请查正后再试！", "闹钟未保存");
+                    return;
+                }
 
                 Alarm alarm = new Alarm
                 {
-                    Hour = Int16.Parse(newHourTextBox.Text),
-                    Minute = Int16.Parse(newMinuteTextBox.Text),
-                    Run = newRunCheckBox.Checked,
-                    Title = newTitleTextBox.Text
+                    Hour = h,
+                    Minute = m,
+                    Run = r,
+                    Title = t
                 };
                 alarmDatabase.Alarms.Add(alarm);
                 alarmDatabase.Save();
-                
-                alarmListBox.Items.Clear();
-                alarmListBox.Items.AddRange(alarmDatabase.Alarms.ToArray());
-                
+
+                refreshAlarmListBox();
+
             } catch
             {
-                MessageBox.Show("请正确填写时间、标题。", "添加失败");
+                MessageBox.Show("请正确填写时间、标题!", "添加失败");
             }
         }
 
@@ -253,47 +247,48 @@ namespace WindowsFormsApp2
             editMinuteTextBox.Text = alarmDatabase.Alarms[index].Minute.ToString();
             editRunCheckBox.Checked = alarmDatabase.Alarms[index].Run;
 
-            editTitleTextBox.ReadOnly = true;
-            editHourTextBox.ReadOnly = true;
-            editMinuteTextBox.ReadOnly = true;
-            editRunCheckBox.Enabled = false;
-            editSaveButton.Enabled = false;
-            editDeleteButton.Enabled = false;
+            alarmItemEditable(false);
         }
 
         private void editEditButton_Click(object sender, EventArgs e)
         {
-            editTitleTextBox.ReadOnly = false;
-            editHourTextBox.ReadOnly = false;
-            editMinuteTextBox.ReadOnly = false;
-            editRunCheckBox.Enabled = true;
-            editSaveButton.Enabled = true;
-            editDeleteButton.Enabled = true;
+            alarmItemEditable(true);
         }
 
         private void editSaveButton_Click(object sender, EventArgs e)
         {
-            // TODO: 时间值的合理性检查
-
-            Alarm alarm = new Alarm
+            try
             {
-                Hour = Int16.Parse(editHourTextBox.Text),
-                Minute = Int16.Parse(editMinuteTextBox.Text),
-                Run = editRunCheckBox.Checked,
-                Title = editTitleTextBox.Text
-            };
-            alarmDatabase.Alarms[_selectedAlarmIndex] = alarm;
-            alarmDatabase.Save();
+                int h = Int16.Parse(editHourTextBox.Text);
+                int m = Int16.Parse(editMinuteTextBox.Text);
+                bool r = editRunCheckBox.Checked;
+                string t = editTitleTextBox.Text;
 
-            alarmListBox.Items.Clear();
-            alarmListBox.Items.AddRange(alarmDatabase.Alarms.ToArray());
+                if (!isReasonableTime(h, m))
+                {
+                    MessageBox.Show("您输入的时间有误，请查正后再试！", "闹钟未保存");
+                    return;
+                }
 
-            editTitleTextBox.ReadOnly = true;
-            editHourTextBox.ReadOnly = true;
-            editMinuteTextBox.ReadOnly = true;
-            editRunCheckBox.Enabled = false;
-            editSaveButton.Enabled = false;
-            editDeleteButton.Enabled = false;
+                Alarm alarm = new Alarm
+                {
+                    Hour = Int16.Parse(editHourTextBox.Text),
+                    Minute = Int16.Parse(editMinuteTextBox.Text),
+                    Run = editRunCheckBox.Checked,
+                    Title = editTitleTextBox.Text
+                };
+                alarmDatabase.Alarms[_selectedAlarmIndex] = alarm;
+                alarmDatabase.Save();
+
+                refreshAlarmListBox();
+
+                alarmItemEditable(false);
+            } catch
+            {
+                MessageBox.Show("请正确填写时间、标题!", "保存失败");
+            }
+
+            
         }
 
         private void editDeleteButton_Click(object sender, EventArgs e)
@@ -301,15 +296,9 @@ namespace WindowsFormsApp2
             alarmDatabase.Alarms.RemoveAt(_selectedAlarmIndex);
             alarmDatabase.Save();
 
-            alarmListBox.Items.Clear();
-            alarmListBox.Items.AddRange(alarmDatabase.Alarms.ToArray());
+            refreshAlarmListBox();
 
-            editTitleTextBox.ReadOnly = true;
-            editHourTextBox.ReadOnly = true;
-            editMinuteTextBox.ReadOnly = true;
-            editRunCheckBox.Enabled = false;
-            editSaveButton.Enabled = false;
-            editDeleteButton.Enabled = false;
+            alarmItemEditable(false);
         }
 
         private void clearAllAlarmsButton_Click(object sender, EventArgs e)
@@ -317,8 +306,7 @@ namespace WindowsFormsApp2
             alarmDatabase.Alarms.Clear();
             alarmDatabase.Save();
 
-            alarmListBox.Items.Clear();
-            alarmListBox.Items.AddRange(alarmDatabase.Alarms.ToArray());
+            refreshAlarmListBox();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -347,6 +335,28 @@ namespace WindowsFormsApp2
         {
             double radius = 0.45 * Math.Min(timePictureBox.Width, timePictureBox.Height);
             drawTickMarks(radius, e.Graphics);
+        }
+
+        private void alarmItemEditable(bool e)
+        {
+            editTitleTextBox.ReadOnly = !e;
+            editHourTextBox.ReadOnly = !e;
+            editMinuteTextBox.ReadOnly = !e;
+            editRunCheckBox.Enabled = e;
+            editSaveButton.Enabled = e;
+            editDeleteButton.Enabled = e;
+        }
+
+        private void refreshAlarmListBox ()
+        {
+            alarmListBox.Items.Clear();
+            // alarmListBox.Items.AddRange(alarmDatabase.Alarms.ToArray());
+            alarmListBox.Items.AddRange(alarmDatabase.getAlarmsForShow());
+        }
+
+        private bool isReasonableTime(int hour, int minute)
+        {
+            return ((hour >= 0) && (hour < 24) && (minute >= 0) && (minute < 60));
         }
     }
 }

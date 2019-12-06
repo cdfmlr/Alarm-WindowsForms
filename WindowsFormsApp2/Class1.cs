@@ -30,6 +30,22 @@ namespace WindowsFormsApp2
             return $"{Hour}:{Minute}:{Run}:{Title}";
         }
 
+        /**
+         * 获取用来显示在 ListBox 中的一条格式化后的数据字符串
+         */
+        public string getPrettyPrintString()
+        {
+            string titleShort;
+            try
+            {
+                titleShort = Title.Substring(0, 7) + "...";
+            } catch
+            {
+                titleShort = Title;
+            }
+            return String.Format("{0,2}:{1,2}\t\t{2,-10}\t{3}", Hour, Minute, titleShort, Run ? "开" : "关");
+        }
+
         public Alarm() { }
 
         public Alarm(string s)
@@ -105,6 +121,15 @@ namespace WindowsFormsApp2
             }
         }
 
+        public string[] getAlarmsForShow()
+        {
+            List<string> s = new List<string>();
+            foreach(Alarm a in Alarms)
+            {
+                s.Add(a.getPrettyPrintString());
+            }
+            return s.ToArray();
+        }
     }
 
     public class TickMarkDrawHelper
@@ -123,7 +148,7 @@ namespace WindowsFormsApp2
 
             for (int index = 0; index < 60; index++)
             {
-                double size = (index % 5 == 0 ? 3 : 1);
+                double size = (index % 5 == 0 ? 3 : 1.5);
                 double radians = index * 2 * Math.PI / 60;
                 double x = center.X + radius * Math.Sin(radians) - size / 2;
                 double y = center.Y - radius * Math.Cos(radians) - size / 2;
