@@ -28,6 +28,8 @@ namespace WindowsFormsApp2
 
             clockGraphics = timePictureBox.CreateGraphics();
 
+            clockGraphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+
             alarmDatabase = new AlarmDatabase("alarm.data.txt");
 
             refreshAlarmListBox();
@@ -120,8 +122,8 @@ namespace WindowsFormsApp2
             // drawTickMarks(radius);
             timePictureBox.Refresh();
 
-            drawHand(sAngle, (int)(radius), 2, Color.Aqua);
-            drawHand(mAngle, (int)(radius*0.8), 4, Color.Red);
+            drawHand(sAngle, (int)(radius*0.9), 2, Color.Aqua);
+            drawHand(mAngle, (int)(radius*0.75), 4, Color.Red);
             drawHand(hAngle, (int)(radius*0.64), 8, Color.Blue);
 
         }
